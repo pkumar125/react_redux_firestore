@@ -4,8 +4,9 @@ import { Item, Icon, List, Button, Segment } from "semantic-ui-react";
 
 class EventListItem extends Component {
   render() {
-    const { event } = this.props;
-    return <Segment.Group>
+    const { event, onViewEvent, onDeleteEvent } = this.props;
+    return (
+      <Segment.Group>
         <Segment>
           <Item.Group>
             <Item>
@@ -27,21 +28,36 @@ class EventListItem extends Component {
         </Segment>
         <Segment secondary>
           <List horizontal>
-            {event.attendees && event.attendees.map((attendee) => (
-            <EventListAttendee key={attendee.id} attendee={attendee}/>
-            ))}
+            {event.attendees &&
+              event.attendees.map(attendee => (
+                <EventListAttendee key={attendee.id} attendee={attendee} />
+              ))}
           </List>
         </Segment>
         <Segment clearing>
           <span>
             Complete freedom in choosing which loads you bid for, and total
-            transparency in the bidding process. You will know exactly how
-            much the customer will be paying, and what our commission is. No
-            wonder Wowtruck has more drivers than any other platform.
+            transparency in the bidding process. You will know exactly how much
+            the customer will be paying, and what our commission is. No wonder
+            Wowtruck has more drivers than any other platform.
           </span>
-          <Button as="a" color="teal" floated="right" content="View" />
+          <Button
+            as="a"
+            color="teal"
+            floated="right"
+            content="View"
+            onClick={onViewEvent(event)}
+          />
+          <Button
+            as="a"
+            color="red"
+            floated="right"
+            content="Delete"
+            onClick={onDeleteEvent(event.id)}
+          />
         </Segment>
-      </Segment.Group>;
+      </Segment.Group>
+    );
   }
 }
 

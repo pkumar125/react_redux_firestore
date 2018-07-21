@@ -4,11 +4,11 @@ import EventList from "../EventList/EventList";
 import EventForm from "../EventForm/Eventform";
 import cuid from "cuid";
 
-const eventDashboard = [
+const eventDashboardJson = [
   {
     id: "1",
     title: "Trip to Tower of London",
-    date: "2018-03-27T11:00:00+00:00",
+    date: "02-07-2018",
     category: "culture",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus sollicitudin ligula eu leo tincidunt, quis scelerisque magna dapibus. Sed eget ipsum vel arcu vehicula ullamcorper.",
@@ -32,31 +32,7 @@ const eventDashboard = [
   {
     id: "2",
     title: "Trip to Punch and Judy Pub",
-    date: "2018-03-28T14:00:00+00:00",
-    category: "drinks",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus sollicitudin ligula eu leo tincidunt, quis scelerisque magna dapibus. Sed eget ipsum vel arcu vehicula ullamcorper.",
-    city: "London, UK",
-    venue: "Punch & Judy, Henrietta Street, London, UK",
-    hostedBy: "Tom",
-    hostPhotoURL: "https://randomuser.me/api/portraits/men/22.jpg",
-    attendees: [
-      {
-        id: "b",
-        name: "Tom",
-        photoURL: "https://randomuser.me/api/portraits/men/22.jpg"
-      },
-      {
-        id: "a",
-        name: "Bob",
-        photoURL: "https://randomuser.me/api/portraits/men/20.jpg"
-      }
-    ]
-  },
-  {
-    id: "3",
-    title: "Trip to Punch and Judy Pub",
-    date: "2018-03-28T14:00:00+00:00",
+    date: "28-03-2018",
     category: "drinks",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus sollicitudin ligula eu leo tincidunt, quis scelerisque magna dapibus. Sed eget ipsum vel arcu vehicula ullamcorper.",
@@ -81,12 +57,14 @@ const eventDashboard = [
 
 class EventDashboard extends Component {
   state = {
-    events: eventDashboard,
+    events: eventDashboardJson,
+    selectedEvent: null,
     isOpen: false
   };
 
   handleFormOpen = () => {
     this.setState({
+      selectedEvent: null,
       isOpen: true
     });
   };
@@ -99,7 +77,7 @@ class EventDashboard extends Component {
 
   handleCreateEvent = newEvent => {
     newEvent.id = cuid();
-    newEvent.PhotoURL = "/assets/images/cash.png";
+    newEvent.hostPhotoURL = "/assets/images/cash.png";
     const updatedEvents = [...this.state.events, newEvent];
     this.setState({
       events: updatedEvents,
@@ -107,11 +85,44 @@ class EventDashboard extends Component {
     });
   };
 
+  handleViewEvent = eventToUpdate => () => {
+    this.setState({
+      selectedEvent: eventToUpdate,
+      isOpen: true
+    });
+  };
+
+  handleUpdatedEvent = updatedEvents => {
+    this.setState({
+      events: this.state.events.map(event => {
+        if (event.id === updatedEvents.id) {
+          return Object.assign({}, updatedEvents);
+        } else {
+          return event;
+        }
+      }),
+      isOpen: null,
+      selectedEvent: null
+    });
+  };
+
+  handleDeleteEvent = eventId => () => {
+    const updatedEvents = this.state.events.filter(e => e.id !== eventId);
+    this.setState({
+      events: updatedEvents
+    });
+  };
+
   render() {
+    const { selectedEvent } = this.state;
     return (
       <Grid>
         <Grid.Column width={10}>
-          <EventList events={this.state.events} />
+          <EventList
+            onDeleteEvent={this.handleDeleteEvent}
+            onViewEvent={this.handleViewEvent}
+            events={this.state.events}
+          />
         </Grid.Column>
         <Grid.Column width={6}>
           <Button
@@ -123,6 +134,8 @@ class EventDashboard extends Component {
             <EventForm
               createEvent={this.handleCreateEvent}
               handleFormClose={this.handleFormClose}
+              selectedEvent={selectedEvent}
+              toUpdatedEvent={this.handleUpdatedEvent}
             />
           )}
         </Grid.Column>
