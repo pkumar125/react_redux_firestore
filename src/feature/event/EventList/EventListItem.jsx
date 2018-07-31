@@ -1,10 +1,11 @@
 import React, { Component } from "react";
+import {Link} from 'react-router-dom'
 import EventListAttendee from "./EventListAttendee";
 import { Item, Icon, List, Button, Segment } from "semantic-ui-react";
 
 class EventListItem extends Component {
   render() {
-    const { event, onViewEvent, onDeleteEvent } = this.props;
+    const { event, onDeleteEvent } = this.props;
     return (
       <Segment.Group>
         <Segment>
@@ -42,11 +43,12 @@ class EventListItem extends Component {
             Wowtruck has more drivers than any other platform.
           </span>
           <Button
-            as="a"
+            as={Link}
+            to={`/event/${event.id}`}
             color="teal"
             floated="right"
             content="View"
-            onClick={onViewEvent(event)}
+           
           />
           <Button
             as="a"
