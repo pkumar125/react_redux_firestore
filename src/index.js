@@ -7,7 +7,7 @@ import "semantic-ui-css/semantic.min.css";
 import "./index.css";
 import App from "./app/layout/App";
 import registerServiceWorker from "./registerServiceWorker";
-import scroolToTop from "./app/common/util/scroolToTop";
+//import scroolToTop from "./app/common/util/scroolToTop";
 
 const store = configureStore();
 
@@ -16,9 +16,9 @@ let render = () => {
   ReactDOM.render(
     <Provider store={store}>
       <BrowserRouter>
-        <scroolToTop>
+        
           <App />
-        </scroolToTop>
+       
       </BrowserRouter>
     </Provider>,
     rootEL
