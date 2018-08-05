@@ -1,25 +1,36 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import { Menu, Container, Button } from "semantic-ui-react";
 import { NavLink, Link, withRouter } from "react-router-dom";
 import SignedInMenu from "../Menus/SignedInMenu";
 import SignOutMenu from "../Menus/SignOutMenu";
+import { openModal } from "../../modals/modalAction";
+import { signOutUser } from "../../auth/authAction";
+
+const actions = {
+  openModal,
+  signOutUser
+};
+const mapState = state => ({
+  auth: state.authR
+});
 
 class NavBar extends Component {
-  state = {
-    authnticate: false
-  };
-
+  
   handleSignIn = () => {
-    this.setState({ authnticate: true });
+    this.props.openModal("LoginModal");
   };
-
+  handleRegister = () => {
+    this.props.openModal("RegisterModal");
+  };
   handleSignOut = () => {
-    this.setState({ authnticate: false });
-    this.props.history.push('/')
+    this.props.signOutUser();
+    this.props.history.push("/");
   };
 
   render() {
-    const { authnticate } = this.state;
+    const { auth } = this.props;
+    const authnticate  = auth.authnticate;
     return (
       <Menu inverted fixed="top">
         <Container>
@@ -44,7 +55,10 @@ class NavBar extends Component {
           {authnticate ? (
             <SignedInMenu SignOut={this.handleSignOut} />
           ) : (
-            <SignOutMenu SignIn={this.handleSignIn} />
+            <SignOutMenu
+              SignIn={this.handleSignIn}
+              register={this.handleRegister}
+            />
           )}
         </Container>
       </Menu>
@@ -52,4 +66,9 @@ class NavBar extends Component {
   }
 }
 
-export default withRouter(NavBar);
+export default withRouter(
+  connect(
+    mapState,
+    actions
+  )(NavBar)
+);
