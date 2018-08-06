@@ -1,6 +1,7 @@
 import { LOGIN_USER, SIGN_OUT_USER } from "./authConstraints";
 import { createReducer } from "../../app/common/util/reducerUtil";
 
+
 const initialState = { currentUser: {} };
 
 const loginR = (state, payload) => {
