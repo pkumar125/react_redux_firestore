@@ -9,7 +9,7 @@ import authReducer from '../../feature/auth/authReducer'
 import asyncReducer from "../../feature/async/asyncReducer";
 
 const rootReducer = combineReducers({
-  formR: FormReducer,
+  form: FormReducer,
   firebase: firebaseReducer,
   firestore: firestoreReducer,
   testR: testReducer,

@@ -1,22 +1,24 @@
 import React, { Component } from 'react';
 import { Button } from 'semantic-ui-react';
 import { connect } from 'react-redux';
+import LoadingComponent from '../../app/layout/LoadingComponent'
 // import Script from 'react-load-script';
 // import GoogleMapReact from 'google-map-react';
 import PlacesAutocomplete, {
   geocodeByAddress,
   getLatLng
 } from 'react-places-autocomplete';
-import { incrementCounter, decrementCounter } from './testAction';
+import { asyncincrementCounter, asyncdecrementCounter } from './testAction';
 import { openModal } from '../modals/modalAction'
 
 const mapState = state => ({
-  data: state.testR.data
+  data: state.testR.data,
+  loading: state.asyncR.loading
 });
 
 const actions = {
-  incrementCounter,
-  decrementCounter,
+  asyncincrementCounter,
+  asyncdecrementCounter,
   openModal
 };
 
@@ -58,24 +60,24 @@ class TestComponent extends Component {
       onChange: this.onChange
     };
 
-    const { incrementCounter, decrementCounter, data, openModal } = this.props;
-    return (
-      <div>
+    const { asyncincrementCounter, asyncdecrementCounter, data, openModal, loading } = this.props;
+    if (loading) return <LoadingComponent inverted={true} />;
+    return <div>
         {/* <Script
           url="https://maps.googleapis.com/maps/api/js?key=AIzaSyCTN8X_q_xtMYCnacteF4ZQj0RKXodI080&libraries=places"
           onLoad={this.handleScriptLoad}
         /> */}
         <h1>Test Area</h1>
         <h3>The answer is: {data}</h3>
-        <Button onClick={incrementCounter} color="green" content="Increment" />
-        <Button onClick={decrementCounter} color="red" content="Decrement" />
-        <Button onClick={() => openModal('TestModal', { data: 42 })} color="teal" content="Open Modal" />
+        <Button onClick={asyncincrementCounter} color="green" content="Increment" />
+      <Button onClick={asyncdecrementCounter} color="red" content="Decrement" />
+        <Button onClick={() => openModal("TestModal", {
+              data: 42
+            })} color="teal" content="Open Modal" />
         <br />
         <br />
         <form onSubmit={this.handleFormSubmit}>
-          {this.state.scriptLoaded && (
-            <PlacesAutocomplete inputProps={inputProps} />
-          )}
+          {this.state.scriptLoaded && <PlacesAutocomplete inputProps={inputProps} />}
           <button type="submit">Submit</button>
         </form>
 
@@ -92,9 +94,7 @@ class TestComponent extends Component {
           />
         </GoogleMapReact>
       </div> */}
-
-      </div>
-    );
+      </div>;
   }
 }
 

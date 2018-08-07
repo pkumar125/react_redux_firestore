@@ -1,4 +1,8 @@
-import { INCREMENT_COUNTER, DECREMENT_COUNTER } from "./testConstrant";
+import {
+  INCREMENT_COUNTER,
+  DECREMENT_COUNTER
+} from "./testConstrant";
+
 const initialState = {
   data: 49
 };
