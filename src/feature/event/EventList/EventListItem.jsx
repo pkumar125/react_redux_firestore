@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import {Link} from 'react-router-dom'
+import format from "date-fns/format";
 import EventListAttendee from "./EventListAttendee";
 import { Item, Icon, List, Button, Segment } from "semantic-ui-react";
 
 class EventListItem extends Component {
   render() {
     const { event, onDeleteEvent } = this.props;
-    return (
-      <Segment.Group>
+    return <Segment.Group>
         <Segment>
           <Item.Group>
             <Item>
@@ -23,7 +23,9 @@ class EventListItem extends Component {
         </Segment>
         <Segment>
           <span>
-            <Icon name="clock" /> {event.date} |
+            <Icon name="clock" /> {format(event.date, "DD-MM-YY")} at {}
+            {format(event.date, "hh-mm-ss")}
+            |
             <Icon name="marker" /> {event.venue}
           </span>
         </Segment>
@@ -38,28 +40,14 @@ class EventListItem extends Component {
         <Segment clearing>
           <span>
             Complete freedom in choosing which loads you bid for, and total
-            transparency in the bidding process. You will know exactly how much
-            the customer will be paying, and what our commission is. No wonder
-            Wowtruck has more drivers than any other platform.
+            transparency in the bidding process. You will know exactly how
+            much the customer will be paying, and what our commission is. No
+            wonder Wowtruck has more drivers than any other platform.
           </span>
-          <Button
-            as={Link}
-            to={`/event/${event.id}`}
-            color="teal"
-            floated="right"
-            content="View"
-           
-          />
-          <Button
-            as="a"
-            color="red"
-            floated="right"
-            content="Delete"
-            onClick={onDeleteEvent(event.id)}
-          />
+          <Button as={Link} to={`/event/${event.id}`} color="teal" floated="right" content="View" />
+          <Button as="a" color="red" floated="right" content="Delete" onClick={onDeleteEvent(event.id)} />
         </Segment>
-      </Segment.Group>
-    );
+      </Segment.Group>;
   }
 }
 

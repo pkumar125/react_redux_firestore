@@ -1,3 +1,4 @@
+import { toastr } from "react-redux-toastr";
 import {
   CREATE_EVENT,
   UPDATE_EVENT,
@@ -12,16 +13,30 @@ import {
 import { fetchSampleData } from "../../app/data/mockApi";
 
 export const createEvent = event => {
-  return {
-    type: CREATE_EVENT,
-    payload: { event }
+  return async dispatch => {
+    try {
+      dispatch({
+        type: CREATE_EVENT,
+        payload: { event }
+      });
+      toastr.success("Success", "Event Created successfully");
+    } catch (error) {
+      toastr.error("Error", "Not able to create Event");
+    }
   };
 };
 
 export const updateEvent = event => {
-  return {
-    type: UPDATE_EVENT,
-    payload: { event }
+  return async dispatch => {
+    try {
+      dispatch({
+        type: UPDATE_EVENT,
+        payload: { event }
+      });
+      toastr.success('Success', 'Event update success')
+    } catch (error) {
+      toastr.error("Error", "Event Update Failed");
+    }
   };
 };
 
@@ -38,9 +53,6 @@ export const fetchEvents = events => {
     payload: events
   };
 };
-
-
-
 
 export const loadEvents = () => {
   return async dispatch => {
