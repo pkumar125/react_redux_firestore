@@ -23,8 +23,8 @@ class EventListItem extends Component {
         </Segment>
         <Segment>
           <span>
-            <Icon name="clock" /> {format(event.date, "DD-MM-YY")} at {}
-            {format(event.date, "hh-mm-ss")}
+          <Icon name="clock" /> {format(event.date.toDate(), "DD-MM-YY")} at {}
+          {format(event.date.toDate(), "hh-mm-ss")}
             |
             <Icon name="marker" /> {event.venue}
           </span>
@@ -32,17 +32,14 @@ class EventListItem extends Component {
         <Segment secondary>
           <List horizontal>
             {event.attendees &&
-              event.attendees.map(attendee => (
-                <EventListAttendee key={attendee.id} attendee={attendee} />
+             Object.values(event.attendees).map((attendee,index) => (
+                <EventListAttendee key={index} attendee={attendee} />
               ))}
           </List>
         </Segment>
         <Segment clearing>
           <span>
-            Complete freedom in choosing which loads you bid for, and total
-            transparency in the bidding process. You will know exactly how
-            much the customer will be paying, and what our commission is. No
-            wonder Wowtruck has more drivers than any other platform.
+            {event.description}
           </span>
           <Button as={Link} to={`/event/${event.id}`} color="teal" floated="right" content="View" />
           <Button as="a" color="red" floated="right" content="Delete" onClick={onDeleteEvent(event.id)} />

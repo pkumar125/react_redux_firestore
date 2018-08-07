@@ -26,7 +26,9 @@ const EventDetailHeader = ({event}) => {
             <Item>
               <Item.Content>
                 <Header size="huge" content={event.title} style={{ color: "white" }} />
-              <p>{format(event.date, 'DD-MM-YY')} at {} {format(event.date, 'hh-mm-ss')} </p>
+                <p>
+                {format(event.date.toDate(), "DD-MM-YY")} at {} {format(event.date.toDate(), "hh-mm-ss")}{" "}
+                </p>
                 <p>
                   Hosted by <strong>{event.hostedBy}</strong>
                 </p>
