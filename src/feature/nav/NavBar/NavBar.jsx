@@ -2,21 +2,21 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Menu, Container, Button } from "semantic-ui-react";
 import { NavLink, Link, withRouter } from "react-router-dom";
+import {withFirebase} from 'react-redux-firebase'
 import SignedInMenu from "../Menus/SignedInMenu";
 import SignOutMenu from "../Menus/SignOutMenu";
 import { openModal } from "../../modals/modalAction";
-import { signOutUser } from "../../auth/authAction";
+
 
 const actions = {
-  openModal,
-  signOutUser
+  openModal
 };
 const mapState = state => ({
-  auth: state.authR
+  auth: state.firebase.auth,
+  profile:state.firebase.profile
 });
 
 class NavBar extends Component {
-  
   handleSignIn = () => {
     this.props.openModal("LoginModal");
   };
@@ -24,15 +24,14 @@ class NavBar extends Component {
     this.props.openModal("RegisterModal");
   };
   handleSignOut = () => {
-    this.props.signOutUser();
+    this.props.firebase.logout();
     this.props.history.push("/");
   };
 
   render() {
-    const { auth } = this.props;
-    const authnticate  = auth.authnticate;
-    return (
-      <Menu inverted fixed="top">
+    const { auth, profile } = this.props;
+    const authnticate = auth.isLoaded && !auth.isEmpty;
+    return <Menu inverted fixed="top">
         <Container>
           <Menu.Item as={NavLink} to="/" header>
             <img src="/assets/images/logo.png" alt="logo" />
@@ -42,33 +41,18 @@ class NavBar extends Component {
           <Menu.Item as={NavLink} to="/people" name="People" />
           <Menu.Item as={NavLink} to="/test" name="Test" />
           <Menu.Item>
-            <Button
-              as={Link}
-              to="/createEvent"
-              floated="right"
-              positive
-              inverted
-              content="Create Customer"
-            />
+            <Button as={Link} to="/createEvent" floated="right" positive inverted content="Create Customer" />
           </Menu.Item>
 
-          {authnticate ? (
-            <SignedInMenu SignOut={this.handleSignOut} />
-          ) : (
-            <SignOutMenu
-              SignIn={this.handleSignIn}
-              register={this.handleRegister}
-            />
-          )}
+        {authnticate ? <SignedInMenu profile={profile} SignOut={this.handleSignOut} /> : <SignOutMenu SignIn={this.handleSignIn} register={this.handleRegister} />}
         </Container>
-      </Menu>
-    );
+      </Menu>;
   }
 }
 
-export default withRouter(
+export default withRouter(withFirebase(
   connect(
     mapState,
     actions
   )(NavBar)
-);
+));
