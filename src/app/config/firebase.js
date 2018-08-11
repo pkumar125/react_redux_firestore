@@ -6,7 +6,7 @@ const firebaseConfig = {
   authDomain: "reduxreactfirebase.firebaseapp.com",
   databaseURL: "https://reduxreactfirebase.firebaseio.com",
   projectId: "reduxreactfirebase",
-  storageBucket: "",
+  storageBucket: "reduxreactfirebase.appspot.com",
   messagingSenderId: "503003533124"
 };
 
