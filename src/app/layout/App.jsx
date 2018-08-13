@@ -15,16 +15,12 @@ import ModalManager from "../../feature/modals/ModalManager";
 
 class App extends Component {
   render() {
-    return (
-      <div>
+    return <div>
         <ModalManager />
         <Switch>
           <Route exact path="/" component={HomePage} />
         </Switch>
-        <Route
-          path="/(.+)"
-          render={() => (
-            <div>
+        <Route path="/(.+)" render={() => <div>
               <NavBar />
               <Container className="main">
                 <Switch>
@@ -33,16 +29,13 @@ class App extends Component {
                   <Route path="/event/:id" component={EventDetailPage} />
                   <Route path="/manage/:id" component={Eventform} />
                   <Route path="/people" component={PeopleDashboard} />
-                  <Route path="/people/:id" component={UserDetailPage} />
+                  <Route path="/profile/:id" component={UserDetailPage} />
                   <Route path="/settings" component={SettingDashboard} />
                   <Route path="/createEvent" component={Eventform} />
                 </Switch>
               </Container>
-            </div>
-          )}
-        />
-      </div>
-    );
+            </div>} />
+      </div>;
   }
 }
 export default App;
