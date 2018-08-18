@@ -1,19 +1,25 @@
 import React, { Component } from "react";
 import { Segment, Grid, Icon, Button } from "semantic-ui-react";
 import EventDetailMap from "./EventDetailMap";
+import format from "date-fns/format";
 
 class EventDetailInfo extends Component {
   state = {
-    showMap:false
-  }
+    showMap: false
+  };
   handleMapToggle = () => {
-this.setState(prevState => ({
-  showMap: !prevState.showMap
-}))
-  }
+    this.setState(prevState => ({
+      showMap: !prevState.showMap
+    }));
+  };
   render() {
     const { event } = this.props;
-    return <Segment.Group>
+    let eventdate;
+    if (event.date) {
+      eventdate = event.date.toDate();
+    }
+    return (
+      <Segment.Group>
         <Segment attached="top">
           <Grid>
             <Grid.Column width={1}>
@@ -30,7 +36,10 @@ this.setState(prevState => ({
               <Icon name="calendar" size="large" color="teal" />
             </Grid.Column>
             <Grid.Column width={15}>
-              <span>{event.date}</span>
+              <span>
+                {format(eventdate, "dddd Do MMM")} at{" "}
+                {format(eventdate, "h:mm A")}
+              </span>
             </Grid.Column>
           </Grid>
         </Segment>
@@ -43,12 +52,23 @@ this.setState(prevState => ({
               <span>{event.venue}</span>
             </Grid.Column>
             <Grid.Column width={4}>
-            <Button onClick={this.handleMapToggle} color="teal" size="tiny" content={this.state.showMap ? 'Hide Map':'Show Map'} />
+              <Button
+                onClick={this.handleMapToggle}
+                color="teal"
+                size="tiny"
+                content={this.state.showMap ? "Hide Map" : "Show Map"}
+              />
             </Grid.Column>
           </Grid>
         </Segment>
-      {this.state.showMap && <EventDetailMap lat={event.venueLatLng.lat} lng={event.venueLatLng.lng} />}
-      </Segment.Group>;
+        {this.state.showMap && (
+          <EventDetailMap
+            lat={event.venueLatLng.lat}
+            lng={event.venueLatLng.lng}
+          />
+        )}
+      </Segment.Group>
+    );
   }
 }
 

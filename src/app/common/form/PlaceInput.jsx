@@ -24,23 +24,14 @@ class PlaceInput extends Component {
           options,
           meta: { touched, error }
       } = this.props;
-    return (
-      <Form.Field error={touched && !!error} width={width}>
-        <Script
-          url="https://maps.googleapis.com/maps/api/js?key=AIzaSyBFke-7343o-TJBiF7Ir5dSkYbvFqu2UxA&libraries=places"
-                onLoad={this.handleScriptLoaded}
-        />
-            
-        {this.state.scriptLoaded && 
-          <PlacesAutocomplete
-            inputProps={{ ...input, placeholder }}
-            options={options}
-            onSelect={onSelect}
-            styles={styles}
-          />   }
-            {touched && error && <Label basic color='red'>{error}</Label>}
-      </Form.Field>
-    );
+    return <Form.Field error={touched && !!error} width={width}>
+        <Script url="https://maps.googleapis.com/maps/api/js?key=AIzaSyBiUoCN8sAXv82llClwV6iEift_jb1gixY&libraries=places" onLoad={this.handleScriptLoaded} />
+
+        {this.state.scriptLoaded && <PlacesAutocomplete inputProps={{ ...input, placeholder }} options={options} onSelect={onSelect} styles={styles} />}
+        {touched && error && <Label basic color="red">
+              {error}
+            </Label>}
+      </Form.Field>;
   }
 }
 

@@ -1,22 +1,28 @@
-import React from 'react'
-import {Grid ,Segment,Header,Image} from 'semantic-ui-react'
-const UserDetailPhoto = ({photos}) => {
-   
+import React from "react";
+import { Grid, Segment, Header, Image } from "semantic-ui-react";
+import LazyLoad from "react-lazyload";
+const UserDetailPhoto = ({ photos }) => {
   return (
+    <Grid.Column width={12}>
+      <Segment attached>
+        <Header icon="image" content="Photos" />
 
-      <Grid.Column width={12}>
-          <Segment attached>
-              <Header icon="image" content="Photos" />
+        <Image.Group size="small">
+          {photos &&
+            photos.map((photo, index) => (
+              <LazyLoad
+                key={photo.id}
+                height={150} 
+                offset={-150}
+                placeholder={<Image src="/assets/user.png" />}
+              >
+                <Image src={photo.url} />
+              </LazyLoad>
+            ))}
+        </Image.Group>
+      </Segment>
+    </Grid.Column>
+  );
+};
 
-              <Image.Group size="small">
-              {photos && photos.map((photo,index) => (
-                  <Image key={photo.id} src={photo.url} />
-              ))}
-                 
-              </Image.Group>
-          </Segment>
-      </Grid.Column>
-  )
-}
-
-export default UserDetailPhoto
+export default UserDetailPhoto;

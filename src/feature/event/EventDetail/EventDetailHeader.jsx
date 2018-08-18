@@ -1,7 +1,7 @@
 import React from "react";
-import format from 'date-fns/format'
+import format from "date-fns/format";
 import { Segment, Image, Item, Header, Button } from "semantic-ui-react";
-import {Link} from 'react-router-dom'
+import { Link } from "react-router-dom";
 
 const eventImageStyle = {
   filter: "brightness(30%)"
@@ -16,18 +16,39 @@ const eventImageTextStyle = {
   color: "white"
 };
 
-const EventDetailHeader = ({event}) => {
-  return <Segment.Group>
+const EventDetailHeader = ({
+  event,
+  isHost,
+  isGoing,
+  goingToEvent,
+  cancelGoingToEvent
+}) => {
+  let eventDate;
+  if (event.date) {
+    eventDate = event.date.toDate();
+  }
+
+  return (
+    <Segment.Group>
       <Segment basic attached="top" style={{ padding: "0" }}>
-        <Image src={`/assets/categoryImages/${event.category}.jpg`} fluid style={eventImageStyle} />
+        <Image
+          src={`/assets/categoryImages/${event.category}.jpg`}
+          fluid
+          style={eventImageStyle}
+        />
 
         <Segment basic style={eventImageTextStyle}>
           <Item.Group>
             <Item>
               <Item.Content>
-                <Header size="huge" content={event.title} style={{ color: "white" }} />
+                <Header
+                  size="huge"
+                  content={event.title}
+                  style={{ color: "white" }}
+                />
                 <p>
-                {format(event.date.toDate(), "DD-MM-YY")} at {} {format(event.date.toDate(), "hh-mm-ss")}{" "}
+                  {format(eventDate, "DD-MM-YY")} at {}{" "}
+                  {format(eventDate, "hh-mm-ss")}{" "}
                 </p>
                 <p>
                   Hosted by <strong>{event.hostedBy}</strong>
@@ -39,14 +60,28 @@ const EventDetailHeader = ({event}) => {
       </Segment>
 
       <Segment attached="bottom">
-        <Button>Cancel My Place</Button>
-        <Button color="teal">JOIN THIS EVENT</Button>
-
-        <Button as={Link} to={`/manage/${event.id}`} color="orange" floated="right">
+        {isGoing ? (
+          <Button onClick={() => cancelGoingToEvent(event)}>
+            Cancel My Place
+          </Button>
+        ) : (
+          <Button color="teal" onClick={() => goingToEvent(event)}>
+            JOIN THIS EVENT
+          </Button>
+        )}
+{ isHost && 
+        <Button
+          as={Link}
+          to={`/manage/${event.id}`}
+          color="orange"
+          floated="right"
+        >
           Manage Event
         </Button>
+}
       </Segment>
-    </Segment.Group>;
+    </Segment.Group>
+  );
 };
 
 export default EventDetailHeader;
