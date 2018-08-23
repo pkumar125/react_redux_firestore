@@ -1,13 +1,13 @@
 import { toastr } from "react-redux-toastr";
 import { moment } from "moment";
-import { DELETE_EVENT, FETCH_EVENT } from "./eventConstraint";
+import firebase from "../../app/config/firebase";
 import {
   asyncActionError,
   asyncActionFinish,
   asyncActionStart
 } from "../async/asyncAction";
-import { fetchSampleData } from "../../app/data/mockApi";
 import { createNewEvent } from "../../app/common/util/helpers";
+import { FETCH_EVENT } from "./eventConstraint";
 
 export const createEvent = event => {
   return async (dispatch, getState, { getFirestore }) => {
@@ -46,45 +46,60 @@ export const updateEvent = event => {
   };
 };
 
-export const cancelToggle = (cancelled, eventId) => async (dispatch, getState, { getFirestore }) => {
-         const firestore = getFirestore();
-         const message = cancelled ? "Are you sure you want to cancel the event" : "This will reactivate the event. Are you sure ?";
-         try {
-           toastr.confirm(message, {
-             onOk: () =>
-               firestore.update(`events/${eventId}`, {
-                 cancelled: cancelled
-               })
-           });
-         } catch (error) {
-           console.log(error);
-         }
-       };
-
-export const deleteEvent = eventId => {
-  return {
-    type: DELETE_EVENT,
-    payload: { eventId }
-  };
+export const cancelToggle = (cancelled, eventId) => async (
+  dispatch,
+  getState,
+  { getFirestore }
+) => {
+  const firestore = getFirestore();
+  const message = cancelled
+    ? "Are you sure you want to cancel the event"
+    : "This will reactivate the event. Are you sure ?";
+  try {
+    toastr.confirm(message, {
+      onOk: () =>
+        firestore.update(`events/${eventId}`, {
+          cancelled: cancelled
+        })
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
-
-export const fetchEvents = events => {
-  return {
-    type: FETCH_EVENT,
-    payload: events
-  };
-};
-
-export const loadEvents = () => {
-  return async dispatch => {
-    try {
-      dispatch(asyncActionStart());
-      let events = await fetchSampleData();
-      dispatch(fetchEvents(events));
+export const getEventForDashboard = lastEvent => async (dispatch, getState) => {
+  let today = new Date(Date.now());
+  const firestore = firebase.firestore();
+  const eventRef = firestore.collection("events");
+  //const eventQuery = eventRef.where("date", ">=", today);
+  try {
+    dispatch(asyncActionStart());
+    let startAfter = lastEvent && (await eventRef.doc(lastEvent.id).get());
+    let query;
+    lastEvent
+      ? (query = eventRef
+          .where("date", ">", today)
+          .orderBy("date")
+          .startAfter(startAfter)
+          .limit(2))
+      : (query = eventRef
+          .where("date", ">", today)
+          .orderBy("date")
+          .limit(2));
+    let querySnap = await query.get();
+    if (querySnap.docs.length === 0) {
       dispatch(asyncActionFinish());
-    } catch (error) {
-      console.log(error);
-      dispatch(asyncActionError());
+      return querySnap;
     }
-  };
+    let events = [];
+    for (let i = 0; i < querySnap.docs.length; i++) {
+      let evt = { ...querySnap.docs[i].data(), id: querySnap.docs[i].id };
+      events.push(evt);
+    }
+    dispatch({ type: FETCH_EVENT, payload: { events } });
+    dispatch(asyncActionFinish());
+    return querySnap;
+  } catch (error) {
+    console.log(error);
+    dispatch(asyncActionError());
+  }
 };

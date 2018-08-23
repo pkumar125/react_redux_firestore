@@ -6,6 +6,9 @@ import {
   asyncActionFinish,
   asyncActionStart
 } from "../async/asyncAction";
+import firebase from "../../app/config/firebase";
+import { FETCH_EVENT } from "../event/eventConstraint";
+
 export const updateProfile = userinfo => async (
   dispatch,
   getState,
@@ -46,7 +49,7 @@ export const updateProfileImage = (file, fileName) => async (
     //get user doc from firestore
     let userDoc = await firestore.get(`users/${user.uid}`);
 
-    console.log(userDoc);
+    //console.log(userDoc);
 
     // check user has photo if not update profile
     if (!userDoc.data().photoURL) {
@@ -147,18 +150,77 @@ export const goingToEvent = event => async (
   }
 };
 
-export const cancelGoingToEvent = (event) => (dispatch,getState,{getFirestore}) => {
-  const firestore = getFirestore()
-  const user = firestore.auth().currentUser
-  try{
-     firestore.update(`events/${event.id}`, {
+export const cancelGoingToEvent = event => (
+  dispatch,
+  getState,
+  { getFirestore }
+) => {
+  const firestore = getFirestore();
+  const user = firestore.auth().currentUser;
+  try {
+    firestore.update(`events/${event.id}`, {
       [`attendees.${user.uid}`]: firestore.FieldValue.delete()
-    })
-     firestore.delete(`event_attendee/${event.id}_${user.uid}`);
-    toastr.success('Success','You have removed successfully')
+    });
+    firestore.delete(`event_attendee/${event.id}_${user.uid}`);
+    toastr.success("Success", "You have removed successfully");
+  } catch (error) {
+    console.log(error);
+    toastr("Error", "Something went wrong");
   }
-  catch(error){
-  console.log(error)
-  toastr('Error','Something went wrong')
+};
+
+export const getUserEvents = (userUid, activeTab) => async (
+  dispatch,
+  getState
+) => {
+  dispatch(asyncActionStart());
+  const today = new Date(Date.now());
+  const firestoreDbConn = firebase.firestore();
+  let connroot = firestoreDbConn.collection("event_attendee");
+  let query;
+
+  switch (activeTab) {
+    case 1: //Past Event
+      query = connroot
+        .where("userUid", "==", userUid)
+        .where("eventDate", "<=", today)
+        .orderBy("eventDate", "desc");
+      break;
+    case 2: //Future Event
+      query = connroot
+        .where("userUid", "==", userUid)
+        .where("eventDate", ">=", today)
+        .orderBy("eventDate");
+      break;
+    case 3: //Hosted Event
+      query = connroot
+        .where("userUid", "==", userUid)
+        .where("host", "==", true)
+        .orderBy("eventDate", "desc");
+      break;
+    default:
+      //All Event
+      query = connroot
+        .where("userUid", "==", userUid)
+        .orderBy("eventDate", "desc");
   }
-}
+  try {
+    let getSnap = await query.get();
+
+    let events = [];
+    for (let i = 0; i < getSnap.docs.length; i++) {
+      let evt = await firestoreDbConn
+        .collection("events")
+        .doc(getSnap.docs[i].data().eventId)
+        .get();
+      
+      events.push({ ...evt.data(), id: evt.id });
+    }
+  
+    dispatch({ type: FETCH_EVENT, payload: { events } });
+    dispatch(asyncActionFinish());
+  } catch (error) {
+    console.log(error);
+    dispatch(asyncActionError());
+  }
+};
